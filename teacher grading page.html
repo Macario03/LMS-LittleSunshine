@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Little Sunshine Teacher Dashboard</title>
+    <style>
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f3f4f6;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        .header {
+            background-color: #1b2e3d;
+            color: #f2f2f2;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            border-bottom: 5px solid #d95c5c;
+        }
+
+        .header .title {
+            font-weight: bold;
+            font-size: 2.5em;
+        }
+        
+        .header .title .highlight {
+            color: #d95c5c;
+        }
+
+        .header .signout {
+            background-color: white;
+            color: #d95c5c;
+            padding: 8px 25px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-size: 1em;
+            transition: background-color 0.3s, color 0.3s;
+            margin-right: 30px;
+        }
+
+        .header .signout:hover {
+            background-color: #d1d1d1;
+            color: #1b2e3d;
+        }
+
+ 
+        .main-container {
+            display: flex;
+            height: 100%;
+        }
+
+      
+        .sidebar {
+            background-color: #1b2e3d;
+            color: #f2f2f2;
+            width: 250px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        .sidebar h3 {
+            color: #d95c5c;
+            margin-bottom: 10px;
+        }
+
+        .student-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .student-list li {
+            padding: 10px;
+            cursor: pointer;
+            border-bottom: 1px solid #d1d1d1;
+        }
+
+        .student-list li:hover {
+            background-color: #d95c5c;
+        }
+
+        .add-student {
+            background-color: #d95c5c;
+            color: #f2f2f2;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+
+        .remove-student {
+            background-color: #f2f2f2;
+            color: #d95c5c;
+            border: none;
+            padding: 5px;
+            cursor: pointer;
+            font-size: 0.8em;
+        }
+
+      
+        .content {
+            flex-grow: 1;
+            padding: 20px;
+        }
+
+      
+        .assignments {
+            background-color: #f3f4f6;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .assignments h4 {
+            margin-top: 0;
+        }
+
+        .assignment-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .grade-input, .details-input {
+            width: 100px;
+            padding: 5px;
+        }
+
+        /* Graph Area */
+        .graph {
+            background-color: #f3f4f6;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        #gradeChart {
+            width: 100%;
+            height: 300px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div class="title">
+            <span class="highlight">Little</span> Sunshine
+        </div>
+        <a href="home.html" class="signout">Back</a>
+    </div>
+    
+    
+    <div class="main-container">
+        
+        <div class="sidebar">
+            <h3>Students</h3>
+            <ul id="studentList" class="student-list"></ul>
+            <button class="add-student" onclick="addStudent()">Add Student</button>
+        </div>
+
+        
+        <div class="content">
+           
+            <div class="assignments" id="assignmentsSection">
+                <h4>Assignments</h4>
+                <div id="assignmentList">
+                
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <input type="text" id="newAssignmentDetails" class="details-input" placeholder="Assignment Details">
+                    <input type="number" id="newAssignmentGrade" class="grade-input" placeholder="Grade" min="0" max="100">
+                    <button class="add-student" onclick="addAssignment()">Add Assignment</button>
+                </div>
+            </div>
+
+           
+            <div class="graph">
+                <h4>Student Grades Statistics</h4>
+                <canvas id="gradeChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+ 
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const students = JSON.parse(localStorage.getItem("students")) || {};
+        let selectedStudent = null;
+        let gradeChart = null;
+
+        function saveStudents() {
+            localStorage.setItem("students", JSON.stringify(students));
+        }
+
+        function addStudent() {
+            const studentName = prompt("Enter student name:");
+            if (studentName && !students[studentName]) {
+                students[studentName] = [];
+                saveStudents();
+                renderStudentList();
+            }
+        }
+
+        function removeStudent(studentName) {
+            delete students[studentName];
+            saveStudents();
+            renderStudentList();
+            if (selectedStudent === studentName) {
+                selectedStudent = null;
+                document.getElementById("assignmentList").innerHTML = "";
+                updateChart([]);
+            }
+        }
+
+        function renderStudentList() {
+            const studentList = document.getElementById("studentList");
+            studentList.innerHTML = "";
+            Object.keys(students).forEach(name => {
+                const li = document.createElement("li");
+                li.textContent = name;
+                li.onclick = () => selectStudent(name);
+                li.innerHTML += ` <button class="remove-student" onclick="event.stopPropagation(); removeStudent('${name}')">Remove</button>`;
+                studentList.appendChild(li);
+            });
+        }
+
+        function selectStudent(studentName) {
+            selectedStudent = studentName;
+            displayAssignments(studentName);
+            updateChart(students[studentName].map(a => a.grade));
+        }
+
+        function displayAssignments(studentName) {
+            const assignmentList = document.getElementById("assignmentList");
+            assignmentList.innerHTML = "";
+            students[studentName].forEach((assignment, index) => {
+                const div = document.createElement("div");
+                div.className = "assignment-item";
+                div.innerHTML = `
+                    <span>${assignment.details}</span>
+                    <input type="number" class="grade-input" value="${assignment.grade}" 
+                           onchange="updateGrade(${index}, this.value)">
+                `;
+                assignmentList.appendChild(div);
+            });
+        }
+
+        function addAssignment() {
+            const details = document.getElementById("newAssignmentDetails").value;
+            const grade = parseFloat(document.getElementById("newAssignmentGrade").value);
+            if (details && !isNaN(grade) && selectedStudent) {
+                students[selectedStudent].push({ details, grade });
+                saveStudents();
+                displayAssignments(selectedStudent);
+                updateChart(students[selectedStudent].map(a => a.grade));
+                document.getElementById("newAssignmentDetails").value = "";
+                document.getElementById("newAssignmentGrade").value = "";
+            }
+        }
+
+        function updateGrade(index, grade) {
+            if (!isNaN(grade)) {
+                students[selectedStudent][index].grade = parseFloat(grade);
+                saveStudents();
+                updateChart(students[selectedStudent].map(a => a.grade));
+            }
+        }
+
+        function updateChart(grades) {
+            const labels = grades.map((_, i) => `Assignment ${i + 1}`);
+            const data = {
+                labels: labels,
+                datasets: [{
+                    label: "Grade Progression",
+                    data: grades,
+                    fill: false,
+                    borderColor: "rgba(75, 192, 192, 1)",
+                    tension: 0.1
+                }]
+            };
+            const config = {
+                type: "line",
+                data: data,
+                options: { responsive: true }
+            };
+            if (gradeChart) gradeChart.destroy();
+            gradeChart = new Chart(document.getElementById("gradeChart"), config);
+        }
+
+        window.onload = () => {
+            renderStudentList();
+            if (Object.keys(students).length > 0) {
+                selectStudent(Object.keys(students)[0]);
+            }
+        };
+    </script>
+</body>
+</html>

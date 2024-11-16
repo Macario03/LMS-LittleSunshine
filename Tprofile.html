@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Little Sunshine Profile</title>
+    <style>
+      
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f3f4f6;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden; 
+        }
+
+      
+        .header {
+            width: 100%;
+            background-color: #1b2e3d;
+            color: #f2f2f2;
+            padding: 20px;
+            text-align: left;
+            border-bottom: 5px solid #d95c5c;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1;	
+        }
+
+        .header .title {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin: 0;
+        }
+
+        .header .title .highlight {
+            color: #d95c5c;
+        }
+
+        .header .back-button {
+            padding: 8px 25px;
+            background-color: white;
+            color: #d95c5c;
+            border: none;
+            border-radius: 10px;
+            font-size: 1em;
+            cursor: pointer;
+            margin-right: 30px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .header .back-button:hover {
+            background-color: #d1d1d1;
+            color: #1b2e3d;
+        }
+
+       
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: calc(100vh - 80px); 
+            margin-top: 80px; 
+            padding: 0 20px; 
+        }
+
+        .profile-card {
+            width: 380px;
+            background-color: #1d3b53;
+            border-radius: 10px;
+            padding: 20px;
+            color: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            border: 3px solid #ff4e4e;
+            overflow: hidden; 
+        }
+
+        .profile-card img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            margin-bottom: 5px;
+            border: 2px solid #ff4e4e;
+        }
+
+    
+        .profile-info {
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            margin-top: 15px;
+            text-align: left; 
+        }
+
+        .profile-info p {
+            margin: 10px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 5px 0;
+        }
+
+        .profile-info strong {
+            color: #ffdb4d;
+            width: 40%; 
+        }
+
+      
+        input[type="text"] {
+            border: none;
+            background: none;
+            color: #fff;
+            width: 60%; 
+            margin-left: 10px;
+            text-align: left;
+            display: none; 
+        }
+        
+        /* Button styles */
+        .upload-button, .edit-button {
+            background-color: #ff4e4e;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: none;
+            cursor: pointer;		
+        }
+
+        .edit-icon {
+            cursor: pointer;
+            font-size: 14px;
+            color: #ffdb4d;
+        }
+    </style>
+</head>
+<body>
+   
+    <div class="header">
+        <div class="title">
+            <span class="highlight">Little</span> Sunshine
+        </div>
+        <a href="home.html"><button class="back-button">Back</button></a>
+    </div>
+
+    
+    <div class="container">
+        <div class="profile-card">
+            <img id="profile-image" src="https://via.placeholder.com/80" alt="Profile Picture">
+            <br>
+            <input type="file" id="image-upload" accept="image/*" style="display: none;">
+            <button class="upload-button" onclick="document.getElementById('image-upload').click();">✎ edit</button>
+            
+            <div class="profile-info">
+                <p>
+                    <strong style="color: #ff4e4e">Name:</strong> 
+                    <span class="info" id="name-info">Ruzel Hernandez</span> 
+                    <button class="edit-button" onclick="editField('name-info', 'name')">✎</button>
+                    <input type="text" id="name" value="Ruzel Hernandez">
+                </p>
+                <p>
+                    <strong style="color: #ff4e4e">Address:</strong> 
+                    <span class="info" id="address-info">Binan Laguna</span> 
+                    <button class="edit-button" onclick="editField('address-info', 'address')">✎</button>
+                    <input type="text" id="address" value="Binan Laguna">
+                </p>
+                <p>
+                    <strong style="color: #ff4e4e">Contact Number:</strong> 
+                    <span class="info" id="contact-info">09953649978</span> 
+                    <button class="edit-button" onclick="editField('contact-info', 'contact')">✎</button>
+                    <input type="text" id="contact" value="09953649978">
+                </p>
+                <p>
+                    <strong style="color: #ff4e4e">Occupation:</strong> 
+                    <span class="info" id="occupation-info">Occupational Therapist</span> 
+                    <button class="edit-button" onclick="editField('occupation-info', 'occupation')">✎</button>
+                    <input type="text" id="occupation" value="Occupational Therapist">
+                </p>
+                <p>
+                    <strong style="color: #ff4e4e">Email Address:</strong> 
+                    <span class="info" id="email-info">ruzel@gmail.com</span> 
+                    <button class="edit-button" onclick="editField('email-info', 'email')">✎</button>
+                    <input type="text" id="email" value="ruzel@gmail.com">
+                </p>
+            </div>
+        </div>
+    </div>
+    <script>
+        
+        document.getElementById('image-upload').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('profile-image').src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        
+        function editField(infoId, inputId) {
+            const infoSpan = document.getElementById(infoId);
+            const inputField = document.getElementById(inputId);
+
+            if (inputField.style.display === 'none' || inputField.style.display === '') {
+             
+                infoSpan.style.display = 'none';
+                inputField.style.display = 'inline-block';
+                inputField.focus();
+            } else {
+               
+                infoSpan.style.display = 'inline';
+                inputField.style.display = 'none';
+                infoSpan.innerText = inputField.value;
+            }
+        }
+    </script>
+
+</body>
+</html>
